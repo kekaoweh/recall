@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
-import { getOwnerKey } from "@/lib/owner";
+import { ensureOwnerKey } from "@/lib/owner";
 
 // Append one or more cards to a deck.
 export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
   const { id } = await ctx.params;
   const sql = getDb();
-  const owner = await getOwnerKey();
+  const owner = await ensureOwnerKey();
   const body = await req.json().catch(() => ({}));
 
   const existing = await sql`SELECT id FROM decks WHERE id = ${id} AND owner_key = ${owner} LIMIT 1`;

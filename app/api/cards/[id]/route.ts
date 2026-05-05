@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
-import { getOwnerKey } from "@/lib/owner";
+import { ensureOwnerKey } from "@/lib/owner";
 
 export async function PATCH(req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
   const { id } = await ctx.params;
   const sql = getDb();
-  const owner = await getOwnerKey();
+  const owner = await ensureOwnerKey();
   const body = await req.json().catch(() => ({}));
 
   // ensure card belongs to a deck owned by this user
@@ -35,7 +35,7 @@ export async function PATCH(req: NextRequest, ctx: { params: Promise<{ id: strin
 export async function DELETE(_req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
   const { id } = await ctx.params;
   const sql = getDb();
-  const owner = await getOwnerKey();
+  const owner = await ensureOwnerKey();
   const result = await sql`
     DELETE FROM cards
     WHERE id = ${id} AND deck_id IN (SELECT id FROM decks WHERE owner_key = ${owner})

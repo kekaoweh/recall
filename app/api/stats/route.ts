@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
-import { getOwnerKey } from "@/lib/owner";
+import { ensureOwnerKey } from "@/lib/owner";
 
 export async function GET() {
   const sql = getDb();
-  const owner = await getOwnerKey();
+  const owner = await ensureOwnerKey();
   const [deckCount] = await sql`SELECT COUNT(*)::int AS n FROM decks WHERE owner_key = ${owner}`;
   const [cardCount] = await sql`
     SELECT COUNT(*)::int AS n FROM cards

@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
-import { getOwnerKey } from "@/lib/owner";
+import { ensureOwnerKey } from "@/lib/owner";
 import { DECK_COLORS } from "@/lib/types";
 
 export async function GET() {
   const sql = getDb();
-  const owner = await getOwnerKey();
+  const owner = await ensureOwnerKey();
   const decks = await sql`
     SELECT d.id, d.title, d.description, d.emoji, d.color, d.is_public,
            d.created_at, d.updated_at,
@@ -20,7 +20,7 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   const sql = getDb();
-  const owner = await getOwnerKey();
+  const owner = await ensureOwnerKey();
   const body = await req.json().catch(() => ({}));
   const title = (body.title || "Untitled deck").toString().slice(0, 80).trim() || "Untitled deck";
   const description = body.description ? String(body.description).slice(0, 300) : null;
